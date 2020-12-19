@@ -3,6 +3,7 @@ package camelia
 import (
 	"crypto/cipher"
 	"encoding/binary"
+	"fmt"
 	"math/bits"
 	"strconv"
 )
@@ -13,12 +14,12 @@ const (
 	MASK64  = 0xffffffffffffffff
 	MASK128 = 0xffffffffffffffffffffffffffffffff
 
-	C1 uint64 = 0xA09E667F3BCC908B
-	C2 uint64 = 0xB67AE8584CAA73B2
-	C3 uint64 = 0xC6EF372FE94F82BE
-	C4 uint64 = 0x54FF53A5F1D36F1C
-	C5 uint64 = 0x10E527FADE682D1D
-	C6 uint64 = 0xB05688C2B3E6C1FD
+	C1 = 0xA09E667F3BCC908B
+	C2 = 0xB67AE8584CAA73B2
+	C3 = 0xC6EF372FE94F82BE
+	C4 = 0x54FF53A5F1D36F1C
+	C5 = 0x10E527FADE682D1D
+	C6 = 0xB05688C2B3E6C1FD
 
 	BLOCKSIZE = 16
 )
@@ -38,6 +39,17 @@ type cameliaCipher struct {
 	ka, kb, kl, kr [2]uint64
 }
 
+func (c cameliaCipher) Print(){
+	for i, k := range c.k{
+		fmt.Printf("k[%d] = %x\n",i+1, k)
+	}
+	for i, k := range c.ke{
+		fmt.Printf("ke[%d]%x\n",i+1, k)
+	}
+	for i, k := range c.kw{
+		fmt.Printf("kw[%d]%x\n",i+1, k)
+	}
+}
 func newCamelliaCipher(klen int) *cameliaCipher {
 	return &cameliaCipher{klen: klen}
 }
@@ -190,94 +202,121 @@ func (c cameliaCipher) Decrypt(dst, src []byte) {
 }
 
 // циклический сдвиг 128-битного ключа
-func rotate128Key(k [2]uint64, n int) (uint64, uint64) {
-	if n > 64 {
-		n %= 64
-		// поворот порядка
+func rotate128Key(k [2]uint64, rot uint) (hi uint64, lo uint64) {
+	//if n > 64 {
+	//	n %= 64
+	//	// поворот порядка
+	//	k[0], k[1] = k[1], k[0]
+	//}
+	////t := *r0 >> (32 - n)
+	////*r0 = (*r0 << n) | (*r1 >> (32 - n))
+	////*r1 = (*r1 << n) | (*r2 >> (32 - n))
+	////*r2 = (*r2 << n) | (*r3 >> (32 - n))
+	////*r3 = (*r3 << n) | t
+	//
+	//// сдвигаем
+	//t := k[0] >> (64 - n)
+	//r := (k[0] << n) | (k[1] >> (64 - n))
+	//l := (k[1] << n) | t
+	//
+	//return r, l
+
+	if rot > 64 {
+		rot -= 64
 		k[0], k[1] = k[1], k[0]
 	}
-	//t := *r0 >> (32 - n)
-	//*r0 = (*r0 << n) | (*r1 >> (32 - n))
-	//*r1 = (*r1 << n) | (*r2 >> (32 - n))
-	//*r2 = (*r2 << n) | (*r3 >> (32 - n))
-	//*r3 = (*r3 << n) | t
 
-	// сдвигаем
-	t := k[0] >> (64 - n)
-	r := (k[0] << n) | (k[1] >> (64 - n))
-	l := (k[1] << n) | t
-
-	return r, l
+	t := k[0] >> (64 - rot)
+	hi = (k[0] << rot) | (k[1] >> (64 - rot))
+	lo = (k[1] << rot) | t
+	return hi, lo
 }
 
 // helpKeys128 - генерация вспомогательных ключей для ключа размером 128 бит
-func (c cameliaCipher) helpKeys128(ka, kl [2]uint64) {
-	c.kw[1], c.kw[2] = rotate128Key(kl, 0)
+func (c *cameliaCipher) helpKeys128(ka, kl [2]uint64) {
+	c.kw[0], c.kw[1] = rotate128Key(kl, 0)
 
-	c.k[1], c.k[2] = rotate128Key(ka, 0)
-	c.k[3], c.k[4] = rotate128Key(kl, 15)
-	c.k[5], c.k[6] = rotate128Key(ka, 15)
+	c.k[0], c.k[1] = rotate128Key(ka, 0)
+	fmt.Printf("k[1] = %x, k[2] = %x\n", c.k[0], c.k[1])
+	c.k[2], c.k[3] = rotate128Key(kl, 15)
+	fmt.Printf("k[3] = %x, k[4] = %x\n", c.k[2], c.k[3])
+	c.k[4], c.k[5] = rotate128Key(ka, 15)
 
-	c.ke[1], c.ke[2] = rotate128Key(ka, 30)
+	c.ke[0], c.ke[1] = rotate128Key(ka, 30)
 
-	c.k[7], c.k[8] = rotate128Key(kl, 45)
-	c.k[9], _ = rotate128Key(ka, 45)
-	_, c.k[10] = rotate128Key(kl, 60)
-	c.k[11], c.k[12] = rotate128Key(ka, 60)
+	c.k[6], c.k[7] = rotate128Key(kl, 45)
+	c.k[8], _ = rotate128Key(ka, 45)
+	_, c.k[9] = rotate128Key(kl, 60)
+	c.k[10], c.k[11] = rotate128Key(ka, 60)
 
-	c.ke[3], c.ke[4] = rotate128Key(kl, 77)
+	c.ke[2], c.ke[3] = rotate128Key(kl, 77)
 
-	c.k[13], c.k[14] = rotate128Key(kl, 94)
-	c.k[15], c.k[16] = rotate128Key(ka, 94)
-	c.k[17], c.k[18] = rotate128Key(kl, 111)
+	c.k[12], c.k[13] = rotate128Key(kl, 94)
+	c.k[14], c.k[15] = rotate128Key(ka, 94)
+	c.k[16], c.k[17] = rotate128Key(kl, 111)
 
-	c.kw[3], c.kw[4] = rotate128Key(ka, 111)
+	c.kw[2], c.kw[3] = rotate128Key(ka, 111)
 }
 
 // helpKeys256 - генерация вспомогательных ключей для ключа размером 194 or 256
-func (c cameliaCipher) helpKeys256(ka, kb, kl, kr [2]uint64) {
-	c.kw[1], c.kw[2] = rotate128Key(kl, 0)
+func (c *cameliaCipher) helpKeys256(ka, kb, kl, kr [2]uint64) {
+	c.kw[0], c.kw[1] = rotate128Key(kl, 0)
 
-	c.k[1], c.k[2] = rotate128Key(kb, 0)
-	c.k[3], c.k[4] = rotate128Key(kr, 15)
-	c.k[5], c.k[6] = rotate128Key(ka, 15)
+	c.k[0], c.k[1] = rotate128Key(kb, 0)
+	c.k[2], c.k[3] = rotate128Key(kr, 15)
+	c.k[4], c.k[5] = rotate128Key(ka, 15)
 
-	c.ke[1], c.ke[2] = rotate128Key(kr, 30)
+	c.ke[0], c.ke[1] = rotate128Key(kr, 30)
 
-	c.k[7], c.k[8] = rotate128Key(kb, 30)
-	c.k[9], c.k[10] = rotate128Key(kl, 45)
-	c.k[11], c.k[12] = rotate128Key(ka, 45)
+	c.k[6], c.k[7] = rotate128Key(kb, 30)
+	c.k[8], c.k[9] = rotate128Key(kl, 45)
+	c.k[10], c.k[11] = rotate128Key(ka, 45)
 
-	c.ke[3], c.ke[4] = rotate128Key(kl, 60)
+	c.ke[2], c.ke[3] = rotate128Key(kl, 60)
 
-	c.k[13], c.k[14] = rotate128Key(kr, 60)
-	c.k[15], c.k[16] = rotate128Key(kb, 60)
-	c.k[17], c.k[18] = rotate128Key(kl, 77)
+	c.k[12], c.k[13] = rotate128Key(kr, 60)
+	c.k[14], c.k[15] = rotate128Key(kb, 60)
+	c.k[16], c.k[17] = rotate128Key(kl, 77)
 
-	c.ke[5], c.ke[6] = rotate128Key(ka, 77)
+	c.ke[4], c.ke[5] = rotate128Key(ka, 77)
 
-	c.k[19], c.k[20] = rotate128Key(kr, 94)
-	c.k[21], c.k[22] = rotate128Key(ka, 94)
-	c.k[23], c.k[24] = rotate128Key(kl, 111)
+	c.k[18], c.k[19] = rotate128Key(kr, 94)
+	c.k[20], c.k[21] = rotate128Key(ka, 94)
+	c.k[22], c.k[23] = rotate128Key(kl, 111)
 
-	c.kw[3], c.kw[4] = rotate128Key(kb, 111)
+	c.kw[2], c.kw[3] = rotate128Key(kb, 111)
 }
 
 // kAkB - вычисления вспомогательных 128-битных чисел KA, KB
 func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	var d1, d2 uint64
 
+	//  KB = (D1 << 64) | D2;
+
+	//   D1 = (KL ^ KR) >> 64;
+	//  D2 = (KL ^ KR) & MASK64;
 	d1 = kl[0] ^ kr[0]
 	d2 = kl[1] ^ kr[1]
 
+	//  D2 = D2 ^ F(D1, C1);
+	//  D1 = D1 ^ F(D2, C2);
 	d2 = d2 ^ f(d1, C1)
 	d1 = d1 ^ f(d2, C2)
 
+	//  D1 = D1 ^ (KL >> 64);
+	//  D2 = D2 ^ (KL & MASK64);
+	//  D2 = D2 ^ F(D1, C3);
 	d1 = d1 ^ (kl[0])
 	d2 = d2 ^ (kl[1])
 	d2 = d2 ^ f(d1, C3)
-	ff := f(d2, C4)
-	d1 = d1 ^ ff
+
+	//  D1 = D1 ^ F(D2, C4);
+	//  KA = (D1 << 64) | D2;
+	//  D1 = (KA ^ KR) >> 64;
+	//  D2 = (KA ^ KR) & MASK64;
+	//  D2 = D2 ^ F(D1, C5);
+	//  D1 = D1 ^ F(D2, C6);
+	d1 = d1 ^ f(d2, C4)
 	ka[0] = d1
 	ka[1] = d2
 	d1 = ka[0] ^ kr[0]
@@ -288,6 +327,11 @@ func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	kb[0] = d1
 	kb[1] = d2
 
+	fmt.Printf("K = %x %x\n", kl[0], kl[1])
+	fmt.Printf("KB = %x %x\n", kr[0], kr[1])
+
+	fmt.Printf("KA = %x %x\n", ka[0], ka[1])
+	fmt.Printf("KB = %x %x\n", kb[0], kb[1])
 	return ka, kb
 }
 
@@ -309,7 +353,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 	var ka [2]uint64
 	var kb [2]uint64
 
-	kl[0] = binary.BigEndian.Uint64(key[0:])
+	kl[0] = binary.BigEndian.Uint64(key[0:8])
 	kl[1] = binary.BigEndian.Uint64(key[8:])
 
 	switch k {
@@ -332,6 +376,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 		c.helpKeys256(ka, kb, kl, kr)
 	}
 
+	c.Print()
 	return c, nil
 }
 
@@ -424,11 +469,12 @@ func f(fIn, ke uint64) uint64 {
 	y7 := t3 ^ t4 ^ t5 ^ t6 ^ t8
 	y8 := t1 ^ t4 ^ t5 ^ t6 ^ t7
 
+
 	// F_OUT = (y1 << 56) | (y2 << 48) | (y3 << 40) | (y4 << 32)| (y5 << 24) | (y6 << 16) | (y7 <<  8) | y8;
-	return (y1 << 56) | (y2 << 48) | (y3 << 40) | (y4 << 32) | (y5 << 24) | (y6 << 16) | (y7 << 8) | y8
+	return uint64(y1)<<56 | uint64(y2)<<48 | uint64(y3)<<40 | uint64(y4)<<32 | uint64(y5)<<24 | uint64(y6)<<16 | uint64(y7)<<8 | uint64(y8)
 }
 
-var sbox = [256]uint64{
+var sbox = [256]uint8{
 	0x70, 0x82, 0x2c, 0xec, 0xb3, 0x27, 0xc0, 0xe5, 0xe4, 0x85, 0x57, 0x35, 0xea, 0x0c, 0xae, 0x41,
 	0x23, 0xef, 0x6b, 0x93, 0x45, 0x19, 0xa5, 0x21, 0xed, 0x0e, 0x4f, 0x4e, 0x1d, 0x65, 0x92, 0xbd,
 	0x86, 0xb8, 0xaf, 0x8f, 0x7c, 0xeb, 0x1f, 0xce, 0x3e, 0x30, 0xdc, 0x5f, 0x5e, 0xc5, 0x0b, 0x1a,
@@ -447,22 +493,22 @@ var sbox = [256]uint64{
 	0x40, 0x28, 0xd3, 0x7b, 0xbb, 0xc9, 0x43, 0xc1, 0x15, 0xe3, 0xad, 0xf4, 0x77, 0xc7, 0x80, 0x9e,
 }
 
-func sbox1(x uint8) uint64 {
+func sbox1(x uint8) uint8 {
 	return sbox[x]
 }
 
 // SBOX2[x] = SBOX1[x] <<< 1;
-func sbox2(x uint8) uint64 {
-	return bits.RotateLeft64(sbox[x], 1)
+func sbox2(x uint8) uint8 {
+	return bits.RotateLeft8(sbox[x], 1)
 }
 
 // SBOX3[x] = SBOX1[x] <<< 7;
-func sbox3(x uint8) uint64 {
-	return bits.RotateLeft64(sbox[x], 7)
+func sbox3(x uint8) uint8 {
+	return bits.RotateLeft8(sbox[x], 7)
 }
 
 // SBOX4[x] = SBOX1[x <<< 1];
-func sbox4(x uint8) uint64 {
+func sbox4(x uint8) uint8 {
 	xx := bits.RotateLeft8(x, 1)
 	return sbox[xx]
 }
