@@ -18,21 +18,6 @@ func NewECB(b cipher.Block) *ecb {
 
 func (x *ecb) BlockSize() int { return x.blockSize }
 
-func ComplementBlock(src []byte) ([]byte, []byte) {
-	compl := BLOCKSIZE - len(src)%BLOCKSIZE
-
-	if compl == 0 {
-		compl = BLOCKSIZE
-	}
-
-	complementBlock := make([]byte, compl)
-	complementBlock[compl-1] = byte(compl)
-	src = append(src, complementBlock...)
-
-	dst := make([]byte, len(src))
-	return src, dst
-}
-
 // тут можно добавить горутин
 func (x *ecb) Encrypt(dst, src []byte) {
 	if len(src)%x.blockSize != 0 {

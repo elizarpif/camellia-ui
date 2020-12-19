@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/elizarpif/camelia/cipher"
+	modes "crypto/cipher"
 	_ "github.com/enceve/crypto/camellia"
 )
 
@@ -20,16 +21,36 @@ func main() {
 	text := []byte("10")
 
 	block, _ := cipher.NewCameliaCipher([]byte(key))
-	src, dst := cipher.ComplementBlock(text)
+	src, dst := cipher.Complement(text)
 
 	ecb := cipher.NewECB(block)
 	ecb.Encrypt(dst, src)
-	fmt.Println(hex.EncodeToString(dst))
+	fmt.Println(string(dst))
 
 	res := ecb.Decrypt(dst, dst)
 	// fmt.Println(hex.EncodeToString(dst))
 	fmt.Println(string(res))
+
+
+	// cbc
+	cbce := modes.NewCBCEncrypter(block, src)
+	cbce.CryptBlocks(dst, src)
+	fmt.Println(string(dst))
+
+	cbcd := modes.NewCBCDecrypter(block, src)
+	cbcd.CryptBlocks(dst, dst)
+	fmt.Println(string(cipher.Uncomplement(dst)))
+
+	// cfb
+	cfbe := modes.NewCFBEncrypter(block, src)
+	cfbe.XORKeyStream(dst, src)
+	fmt.Println(string(dst))
+
+	cfbd := modes.NewCFBDecrypter(block, src)
+	cfbd.XORKeyStream(dst, dst)
+	fmt.Println(string(cipher.Uncomplement(dst)))
 }
+
 
 /*
 Алгоритм необходимо реализовать в оконном или Web-приложении.
