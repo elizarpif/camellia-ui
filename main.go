@@ -1,8 +1,9 @@
 package main
 
 import (
-	"./camelia"
 	"encoding/hex"
+
+	"github.com/elizarpif/camelia/camelia"
 )
 
 func fromHex(s string) []byte {
@@ -18,6 +19,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	plaintext := fromHex("0123456789abcdeffedcba9876543210")
+	ciphertext := fromHex("67673138549669730857065648eabe43")
+
+
 }
 
 /*

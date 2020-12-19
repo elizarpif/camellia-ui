@@ -276,7 +276,8 @@ func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	d1 = d1 ^ (kl[0])
 	d2 = d2 ^ (kl[1])
 	d2 = d2 ^ f(d1, C3)
-	d1 = d1 ^ f(d2, C4)
+	ff := f(d2, C4)
+	d1 = d1 ^ ff
 	ka[0] = d1
 	ka[1] = d2
 	d1 = ka[0] ^ kr[0]
@@ -384,7 +385,6 @@ func flinv(flinvIn, ke uint64) uint64 {
 func f(fIn, ke uint64) uint64 {
 	// 	   x  = F_IN ^ KE;
 	x := fIn ^ ke
-
 	/*
 	   t1 =  x >> 56;
 	   t2 = (x >> 48) & MASK8;
@@ -395,33 +395,15 @@ func f(fIn, ke uint64) uint64 {
 	   t7 = (x >>  8) & MASK8;
 	   t8 =  x        & MASK8;
 	*/
-	t1 := x >> 56
-	t2 := (x >> 48) & MASK8
-	t3 := (x >> 40) & MASK8
-	t4 := (x >> 32) & MASK8
-	t5 := (x >> 24) & MASK8
-	t6 := (x >> 16) & MASK8
-	t7 := (x >> 8) & MASK8
-	t8 := x & MASK8
 
-	/*
-	   t1 = SBOX1[t1];
-	   t2 = SBOX2[t2];
-	   t3 = SBOX3[t3];
-	   t4 = SBOX4[t4];
-	   t5 = SBOX2[t5];
-	   t6 = SBOX3[t6];
-	   t7 = SBOX4[t7];
-	   t8 = SBOX1[t8];
-	*/
-	t1 = sbox1(t1)
-	t2 = sbox2(t2)
-	t3 = sbox3(t3)
-	t4 = sbox4(t4)
-	t5 = sbox2(t5)
-	t6 = sbox3(t6)
-	t7 = sbox4(t7)
-	t8 = sbox1(t8)
+	t1 := sbox1(uint8(x >> 56))
+	t2 := sbox2(uint8(x>>48))
+	t3 := sbox3(uint8(x>>40))
+	t4 := sbox4(uint8(x>>32))
+	t5 := sbox2(uint8(x>>24))
+	t6 := sbox3(uint8(x>>16))
+	t7 := sbox4(uint8(x>>8))
+	t8 := sbox1(uint8(x))
 
 	/*
 	   y1 = t1 ^ t3 ^ t4 ^ t6 ^ t7 ^ t8;
@@ -465,21 +447,22 @@ var sbox = [256]uint64{
 	0x40, 0x28, 0xd3, 0x7b, 0xbb, 0xc9, 0x43, 0xc1, 0x15, 0xe3, 0xad, 0xf4, 0x77, 0xc7, 0x80, 0x9e,
 }
 
-func sbox1(x uint64) uint64 {
+func sbox1(x uint8) uint64 {
 	return sbox[x]
 }
 
 // SBOX2[x] = SBOX1[x] <<< 1;
-func sbox2(x uint64) uint64 {
+func sbox2(x uint8) uint64 {
 	return bits.RotateLeft64(sbox[x], 1)
 }
 
 // SBOX3[x] = SBOX1[x] <<< 7;
-func sbox3(x uint64) uint64 {
+func sbox3(x uint8) uint64 {
 	return bits.RotateLeft64(sbox[x], 7)
 }
 
 // SBOX4[x] = SBOX1[x <<< 1];
-func sbox4(x uint64) uint64 {
-	return sbox[bits.RotateLeft(uint(x), 1)]
+func sbox4(x uint8) uint64 {
+	xx := bits.RotateLeft8(x, 1)
+	return sbox[xx]
 }
