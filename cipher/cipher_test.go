@@ -1,8 +1,9 @@
-package camelia
+package cipher
 
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
 	"testing"
 )
 
@@ -88,17 +89,19 @@ func TestVectors(t *testing.T) {
 			ciphertext := fromHex(v.ciphertext)
 			buf := make([]byte, BLOCKSIZE)
 
-			c, err := NewCipher(key)
+			c, err := NewCameliaCipher(key)
 			if err != nil {
 				t.Fatalf("Test vector %d: Failed to create Camellia instance: %s", i, err)
 			}
 
 			c.Encrypt(buf, plaintext)
+			fmt.Println( hex.EncodeToString(buf))
 			if !bytes.Equal(ciphertext, buf) {
 				t.Fatalf("Test vector %d:\nEncryption failed\nFound:    %s\nExpected: %s", i, hex.EncodeToString(buf), hex.EncodeToString(ciphertext))
 			}
 
 			c.Decrypt(buf, buf)
+			fmt.Println( hex.EncodeToString(buf))
 			if !bytes.Equal(plaintext, buf) {
 				t.Fatalf("Test vector %d:\nDecryption failed\nFound:    %s\nExpected: %s", i, hex.EncodeToString(buf), hex.EncodeToString(plaintext))
 			}

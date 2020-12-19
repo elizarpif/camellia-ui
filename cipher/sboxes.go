@@ -1,4 +1,4 @@
-package camelia
+package cipher
 
 import "math/bits"
 

@@ -1,4 +1,4 @@
-package camelia
+package cipher
 
 import (
 	"crypto/cipher"
@@ -13,7 +13,7 @@ const BLOCKSIZE = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-	return "camelia: invalid key size " + strconv.Itoa(int(k))
+	return "cipher: invalid key size " + strconv.Itoa(int(k))
 }
 
 type cameliaCipher struct {
@@ -45,6 +45,13 @@ func (c cameliaCipher) BlockSize() int {
 }
 
 func crypt(c cameliaCipher, dst, src []byte) {
+	if len(src) < BLOCKSIZE {
+		panic("cipher: src buffer is small")
+	}
+	if len(dst) < BLOCKSIZE {
+		panic("cipher: dst buffer is small")
+	}
+
 	//  Шифруемое сообщение делится на две 64-битные части
 	d1 := binary.BigEndian.Uint64(src[0:])
 	d2 := binary.BigEndian.Uint64(src[8:])
@@ -97,6 +104,8 @@ func crypt(c cameliaCipher, dst, src []byte) {
 
 	binary.BigEndian.PutUint64(dst[0:], d2)
 	binary.BigEndian.PutUint64(dst[8:], d1)
+
+	// fmt.Printf("crypted text = %x ", string(dst))
 }
 
 // src = 128-битное (16-байтовое сообщение)
@@ -254,18 +263,18 @@ func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	kb[0] = d1
 	kb[1] = d2
 
-	fmt.Printf("K = %x %x\n", kl[0], kl[1])
-	fmt.Printf("KB = %x %x\n", kr[0], kr[1])
-
-	fmt.Printf("KA = %x %x\n", ka[0], ka[1])
-	fmt.Printf("KB = %x %x\n", kb[0], kb[1])
+	//fmt.Printf("K = %x %x\n", kl[0], kl[1])
+	//fmt.Printf("KB = %x %x\n", kr[0], kr[1])
+	//
+	//fmt.Printf("KA = %x %x\n", ka[0], ka[1])
+	//fmt.Printf("KB = %x %x\n", kb[0], kb[1])
 	return ka, kb
 }
 
 // 128 бит = 16 байт
 // 256 бит = 32 байт
 // 192 бит = 24 байт
-func NewCipher(key []byte) (cipher.Block, error) {
+func NewCameliaCipher(key []byte) (cipher.Block, error) {
 	k := len(key)
 
 	switch k {
@@ -303,7 +312,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 		c.helpKeys256(ka, kb, kl, kr)
 	}
 
-	c.Print()
+	// c.Print()
 	return c, nil
 }
 

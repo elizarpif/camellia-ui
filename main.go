@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/hex"
-
-	"github.com/elizarpif/camelia/camelia"
+	"fmt"
+	"github.com/elizarpif/camelia/cipher"
+	_ "github.com/enceve/crypto/camellia"
 )
 
 func fromHex(s string) []byte {
@@ -15,15 +16,19 @@ func fromHex(s string) []byte {
 }
 
 func main() {
-	_, err := camelia.NewCipher(fromHex("0123456789abcdeffedcba9876543210"))
-	if err != nil {
-		panic(err)
-	}
+	key := []byte("0123456789abcdeffedcba9876543210")
+	text := []byte("10")
 
-	plaintext := fromHex("0123456789abcdeffedcba9876543210")
-	ciphertext := fromHex("67673138549669730857065648eabe43")
+	block, _ := cipher.NewCameliaCipher([]byte(key))
+	src, dst := cipher.ComplementBlock(text)
 
+	ecb := cipher.NewECB(block)
+	ecb.Encrypt(dst, src)
+	fmt.Println(hex.EncodeToString(dst))
 
+	res := ecb.Decrypt(dst, dst)
+	// fmt.Println(hex.EncodeToString(dst))
+	fmt.Println(string(res))
 }
 
 /*
