@@ -8,18 +8,7 @@ import (
 	"strconv"
 )
 
-const (
-	MASK32  = 0xffffffff
-
-	C1 = 0xA09E667F3BCC908B
-	C2 = 0xB67AE8584CAA73B2
-	C3 = 0xC6EF372FE94F82BE
-	C4 = 0x54FF53A5F1D36F1C
-	C5 = 0x10E527FADE682D1D
-	C6 = 0xB05688C2B3E6C1FD
-
-	BLOCKSIZE = 16
-)
+const BLOCKSIZE = 16
 
 type KeySizeError int
 
@@ -28,12 +17,15 @@ func (k KeySizeError) Error() string {
 }
 
 type cameliaCipher struct {
-	kw   [5]uint64
-	k    [25]uint64
-	ke   [7]uint64
-	klen int
+	kw [4]uint64
+	k  [24]uint64
+	ke [6]uint64
 
-	ka, kb, kl, kr [2]uint64
+	klen int
+}
+
+func newCamelliaCipher(klen int) *cameliaCipher {
+	return &cameliaCipher{klen: klen}
 }
 
 func (c cameliaCipher) Print() {
@@ -46,10 +38,6 @@ func (c cameliaCipher) Print() {
 	for i, k := range c.kw {
 		fmt.Printf("kw[%d]%x\n", i+1, k)
 	}
-}
-
-func newCamelliaCipher(klen int) *cameliaCipher {
-	return &cameliaCipher{klen: klen}
 }
 
 func (c cameliaCipher) BlockSize() int {
@@ -231,6 +219,15 @@ func (c *cameliaCipher) helpKeys256(ka, kb, kl, kr [2]uint64) {
 	c.kw[2], c.kw[3] = rotate128Key(kb, 111)
 }
 
+const (
+	C1 = 0xA09E667F3BCC908B
+	C2 = 0xB67AE8584CAA73B2
+	C3 = 0xC6EF372FE94F82BE
+	C4 = 0x54FF53A5F1D36F1C
+	C5 = 0x10E527FADE682D1D
+	C6 = 0xB05688C2B3E6C1FD
+)
+
 // kAkB - вычисления вспомогательных 128-битных чисел KA, KB
 func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	var d1, d2 uint64
@@ -309,6 +306,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
 	c.Print()
 	return c, nil
 }
+
+const MASK32 = 0xffffffff
 
 func fl(flIn, ke uint64) uint64 {
 	var x1, x2 uint32
