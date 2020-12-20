@@ -14,9 +14,9 @@ type cfb struct {
 	decrypt bool
 }
 
-func (x *cfb) XORKeyStream(dst, src []byte) {
+func (x *cfb) XORKeyStream(dst, src []byte) error {
 	if len(dst) < len(src) {
-		panic("output smaller than input")
+		return errors.New("output smaller than input")
 	}
 
 	for len(src) > 0 {
@@ -38,18 +38,20 @@ func (x *cfb) XORKeyStream(dst, src []byte) {
 		src = src[n:]
 		x.outUsed += n
 	}
+
+	return nil
 }
 
 
-func NewCFBEncrypter(block cipher.Block, iv []byte) (cipher.Stream, error) {
+func NewCFBEncrypter(block cipher.Block, iv []byte) (Stream, error) {
 	return newCFB(block, iv, false)
 }
 
-func NewCFBDecrypter(block cipher.Block, iv []byte) (cipher.Stream, error) {
+func NewCFBDecrypter(block cipher.Block, iv []byte) (Stream, error) {
 	return newCFB(block, iv, true)
 }
 
-func newCFB(block cipher.Block, iv []byte, decrypt bool) (cipher.Stream, error) {
+func newCFB(block cipher.Block, iv []byte, decrypt bool) (Stream, error) {
 	blockSize := block.BlockSize()
 	if len(iv) != blockSize {
 		return nil, errors.New("uncorrect IV length")

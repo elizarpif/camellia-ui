@@ -17,16 +17,16 @@ func fromHex(s string) []byte {
 	}
 	return b
 }
-func openfile(filename string) ([]byte, error){
+func openfile(filename string) ([]byte, error) {
 	dat, err := ioutil.ReadFile(filename)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return dat, nil
 }
 
-func writeFile(data []byte, filename string) error{
+func writeFile(data []byte, filename string) error {
 	return ioutil.WriteFile(filename, data, 0777)
 }
 
@@ -82,7 +82,6 @@ func main() {
 	//	panic(err)
 	//}
 
-
 	//// cbc
 	//cbce := modes.NewCBCEncrypter(block, src)
 	//cbce.CryptBlocks(dst, src)
@@ -106,7 +105,7 @@ func main() {
 	//ofbe.XORKeyStream(dst, src)
 	//fmt.Println(string(dst))
 	//
-	//ofbd := modes.NewOFB(block, src)
+	//ofbd := cipher.NewOFB(block, src)
 	//ofbd.XORKeyStream(dst, dst)
 	//fmt.Println(string(camellia.Uncomplement(dst)))
 }

@@ -33,7 +33,7 @@ func newCBC(b cipher.Block, iv []byte) *cbc {
 
 type cbcEncrypter cbc
 
-func NewCBCEncrypter(b cipher.Block, iv []byte) (cipher.BlockMode, error) {
+func NewCBCEncrypter(b cipher.Block, iv []byte) (BlockMode, error) {
 	if len(iv) != b.BlockSize() {
 		return nil, errors.New("IV length must equal block size")
 	}
@@ -43,28 +43,12 @@ func NewCBCEncrypter(b cipher.Block, iv []byte) (cipher.BlockMode, error) {
 
 func (x *cbcEncrypter) BlockSize() int { return x.blockSize }
 
-func xorBytes(dst, a, b []byte) int {
-	n := len(a)
-	if len(b) < n {
-		n = len(b)
-	}
-	if n == 0 {
-		return 0
-	}
-
-	for i := 0; i < n; i++ {
-		dst[i] = a[i] ^ b[i]
-	}
-
-	return n
-}
-
-func (x *cbcEncrypter) CryptBlocks(dst, src []byte) {
+func (x *cbcEncrypter) CryptBlocks(dst, src []byte) error {
 	if len(src)%x.blockSize != 0 {
-		panic("input not full blocks")
+		return errors.New("input not full blocks")
 	}
 	if len(dst) < len(src) {
-		panic("output smaller than input")
+		return errors.New("output smaller than input")
 	}
 
 	iv := x.iv
@@ -79,11 +63,12 @@ func (x *cbcEncrypter) CryptBlocks(dst, src []byte) {
 	}
 
 	copy(x.iv, iv)
+	return nil
 }
 
 type cbcDecrypter cbc
 
-func NewCBCDecrypter(b cipher.Block, iv []byte) (cipher.BlockMode, error) {
+func NewCBCDecrypter(b cipher.Block, iv []byte) (BlockMode, error) {
 	if len(iv) != b.BlockSize() {
 		return nil, errors.New("IV length must equal block size")
 	}
@@ -92,16 +77,16 @@ func NewCBCDecrypter(b cipher.Block, iv []byte) (cipher.BlockMode, error) {
 
 func (x *cbcDecrypter) BlockSize() int { return x.blockSize }
 
-func (x *cbcDecrypter) CryptBlocks(dst, src []byte) {
+func (x *cbcDecrypter) CryptBlocks(dst, src []byte) error {
 	if len(src)%x.blockSize != 0 {
-		panic("input not full blocks")
+		return errors.New("input not full blocks")
 	}
 	if len(dst) < len(src) {
-		panic("output smaller than input")
+		return errors.New("output smaller than input")
 	}
 
 	if len(src) == 0 {
-		return
+		return nil
 	}
 
 	end := len(src)
@@ -123,4 +108,6 @@ func (x *cbcDecrypter) CryptBlocks(dst, src []byte) {
 	xorBytes(dst[start:end], dst[start:end], x.iv)
 
 	x.iv, x.tmp = x.tmp, x.iv
+
+	return nil
 }
