@@ -14,9 +14,6 @@ func main() {
 
 	mainWindow := widgets.NewQMainWindow(nil, 0)
 	mainWindow.SetMinimumSize2(250, 200)
-	mainWindow.SetWindowTitle("Hello Widgets Example")
-
-	//this->centralWidget()->setStyleSheet("background-image:url(\"bkg.jpg\"); background-position: center; ");
 
 	uiWindow := &ui.UICamelliaMainWindow{}
 	uiWindow.SetupUI(mainWindow)
