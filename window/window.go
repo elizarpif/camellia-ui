@@ -3,8 +3,9 @@ package window
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/elizarpif/camelia/camellia"
-	"github.com/elizarpif/camelia/ui"
+
+	"github.com/elizarpif/camellia-ui/camellia"
+	"github.com/elizarpif/camellia-ui/ui"
 )
 
 type Window struct {
