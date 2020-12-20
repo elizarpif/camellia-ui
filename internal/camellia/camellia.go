@@ -104,8 +104,6 @@ func crypt(c cameliaCipher, dst, src []byte) {
 
 	binary.BigEndian.PutUint64(dst[0:], d2)
 	binary.BigEndian.PutUint64(dst[8:], d1)
-
-	// fmt.Printf("crypted text = %x ", string(dst))
 }
 
 // src = 128-битное (16-байтовое сообщение)
@@ -178,9 +176,7 @@ func (c *cameliaCipher) helpKeys128(ka, kl [2]uint64) {
 	c.kw[0], c.kw[1] = rotate128Key(kl, 0)
 
 	c.k[0], c.k[1] = rotate128Key(ka, 0)
-	fmt.Printf("k[1] = %x, k[2] = %x\n", c.k[0], c.k[1])
 	c.k[2], c.k[3] = rotate128Key(kl, 15)
-	fmt.Printf("k[3] = %x, k[4] = %x\n", c.k[2], c.k[3])
 	c.k[4], c.k[5] = rotate128Key(ka, 15)
 
 	c.ke[0], c.ke[1] = rotate128Key(ka, 30)
@@ -263,11 +259,6 @@ func kAkB(kl, kr [2]uint64) (ka [2]uint64, kb [2]uint64) {
 	kb[0] = d1
 	kb[1] = d2
 
-	//fmt.Printf("K = %x %x\n", kl[0], kl[1])
-	//fmt.Printf("KB = %x %x\n", kr[0], kr[1])
-	//
-	//fmt.Printf("KA = %x %x\n", ka[0], ka[1])
-	//fmt.Printf("KB = %x %x\n", kb[0], kb[1])
 	return ka, kb
 }
 
@@ -312,7 +303,6 @@ func NewCameliaCipher(key []byte) (cipher.Block, error) {
 		c.helpKeys256(ka, kb, kl, kr)
 	}
 
-	// c.Print()
 	return c, nil
 }
 

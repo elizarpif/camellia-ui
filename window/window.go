@@ -77,7 +77,11 @@ func (w *Window) EncryptData() {
 			return
 		}
 
-		c := cipher.NewCBCEncrypter(block, iv)
+		c, err := camellia.NewCBCEncrypter(block, iv)
+		if err != nil{
+			w.log(err.Error())
+		}
+
 		go func() {
 			w.blockModeEncrypt(c, data)
 		}()
@@ -118,7 +122,10 @@ func (w *Window) DecryptData() {
 			return
 		}
 
-		c := cipher.NewCBCDecrypter(block, iv)
+		c, err := camellia.NewCBCDecrypter(block, iv)
+		if err != nil{
+			w.log(err.Error())
+		}
 		go func() {
 			w.blockModeDecrypt(c, data)
 		}()

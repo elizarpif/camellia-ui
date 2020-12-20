@@ -26,10 +26,10 @@ func (x *ecbEncrypter) BlockSize() int { return x.blockSize }
 
 func (x *ecbEncrypter) CryptBlocks(dst, src []byte) {
 	if len(src)%x.blockSize != 0 {
-		panic("crypto/camellia: input not full blocks")
+		panic("input not full blocks")
 	}
 	if len(dst) < len(src) {
-		panic("crypto/camellia: output smaller than input")
+		panic("output smaller than input")
 	}
 	for len(src) > 0 {
 		x.b.Encrypt(dst, src[:x.blockSize])
@@ -48,10 +48,10 @@ func (x *ecbDecrypter) BlockSize() int { return x.blockSize }
 
 func (x *ecbDecrypter) CryptBlocks(dst, src []byte) {
 	if len(src)%x.blockSize != 0 {
-		panic("crypto/camellia: input not full blocks")
+		panic("input not full blocks")
 	}
 	if len(dst) < len(src) {
-		panic("crypto/camellia: output smaller than input")
+		panic("output smaller than input")
 	}
 	for len(src) > 0 {
 		x.b.Decrypt(dst, src[:x.blockSize])
