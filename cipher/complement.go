@@ -16,6 +16,9 @@ func Complement(src []byte) ([]byte, []byte) {
 }
 
 func Uncomplement(dst []byte) []byte {
+	if len(dst) == 0 {
+		return dst
+	}
 	n := int(dst[len(dst)-1])
 	to := len(dst) - int(n)
 	return dst[:to]
