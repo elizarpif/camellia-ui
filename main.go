@@ -2,12 +2,12 @@ package main
 
 import (
 	"encoding/hex"
-	"github.com/elizarpif/camelia/ui"
-	"github.com/elizarpif/camelia/window"
-	_ "github.com/enceve/crypto/camellia"
-	"github.com/therecipe/qt/widgets"
 	"io/ioutil"
 	"os"
+
+	"github.com/elizarpif/camellia/ui"
+	"github.com/elizarpif/camellia/window"
+	"github.com/therecipe/qt/widgets"
 )
 
 func fromHex(s string) []byte {

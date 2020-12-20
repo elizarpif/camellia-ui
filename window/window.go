@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/elizarpif/camellia-ui/camellia"
-	"github.com/elizarpif/camellia-ui/ui"
+	"github.com/elizarpif/camellia/internal/camellia"
+	"github.com/elizarpif/camellia/ui"
 )
 
 type Window struct {
