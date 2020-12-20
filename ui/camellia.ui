@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>824</width>
-    <height>632</height>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,12 +20,15 @@
    <number>-9</number>
   </property>
   <property name="styleSheet">
-   <string notr="true">QLabel{
-    background: rgb(0, 0, 0, 0);
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">
+QLabel{
+    /*background: rgb(0, 0, 0);*/
     /*font-family: serif, Georgia;*/
     font-size: 13px;
-    letter-spacing: 2px;
-    word-spacing: 2px;
     color: rgb(0, 36, 185);
     font-weight: 400;
     text-decoration: underline rgb(68, 68, 68);
@@ -43,7 +46,6 @@ QTextEdit:hover{
 }
 
 QPushButton {
-    display: inline-block;
     color: white;
     text-decoration: none;
     padding: .1em 1em;
@@ -53,16 +55,17 @@ QPushButton {
     border-color: #FDBE33 #000 #D77206;
     border-radius: 6px;
     background: linear-gradient(#F3AE0F, #E38916) #E38916;
-    transition: 0.2s;
 }
 QPushButton:active {
     background: linear-gradient(#f59500, #f5ae00) #f59500;
 }
 QPushButton:hover{
     background: linear-gradient(#f5ae00, #f59500) #f5ae00;
+}
+QPushButton:pressed{
+    background: linear-gradient(#F3AE0F, #E38916) #E38916;
 }</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
+   </property>
    <widget class="QLineEdit" name="keyEdit">
     <property name="geometry">
      <rect>
@@ -400,7 +403,6 @@ QPushButton:hover{
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="stylesheet.qrc"/>
   <include location="../resources/background_image.qrc"/>
  </resources>
  <connections/>

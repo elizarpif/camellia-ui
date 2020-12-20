@@ -1,6 +1,7 @@
-<RCC>
-  <qresource>
-    <file>background.jpg</file>
-    <file>background_light.png</file>
-  </qresource>
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>camelia1.jpg</file>
+    <file>camelia2.jpg</file>
+    <file>camelia3.png/file>
+</qresource>
 </RCC>
