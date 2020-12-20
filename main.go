@@ -93,10 +93,10 @@ func main() {
 	//fmt.Println(string(camellia.Uncomplement(dst)))
 	//
 	//// cfb
-	//cfbe := modes.NewCFBEncrypter(block, src)
+	//cfbe := cipher.NewCFBEncrypter(block, src)
 	//cfbe.XORKeyStream(dst, src)
 	//fmt.Println(string(dst))
-	//
+
 	//cfbd := modes.NewCFBDecrypter(block, src)
 	//cfbd.XORKeyStream(dst, dst)
 	//fmt.Println(string(camellia.Uncomplement(dst)))

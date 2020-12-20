@@ -44,7 +44,9 @@ func (w *Window) Connect() {
 		w.uiWindow.IvEdit.SetDisabled(true)
 	})
 	ww.CfbBth.ConnectClicked(func(checked bool) {
-		w.uiWindow.IvEdit.SetDisabled(true)
+		if checked {
+			w.uiWindow.IvEdit.SetEnabled(true)
+		}
 	})
 }
 
@@ -84,6 +86,22 @@ func (w *Window) EncryptData() {
 
 		go func() {
 			w.blockModeEncrypt(c, data)
+		}()
+	}
+
+	if w.uiWindow.CfbBth.IsChecked() {
+		iv := []byte(w.uiWindow.IvEdit.Text())
+		if !camellia.CorrectIV(iv) {
+			w.log("Некорректный вектор инициализации")
+			return
+		}
+
+		c, err := camellia.NewCFBEncrypter(block, iv)
+		if err != nil{
+			w.log(err.Error())
+		}
+		go func() {
+			w.blockStreamEncrypt(c, data)
 		}()
 	}
 }
@@ -130,6 +148,22 @@ func (w *Window) DecryptData() {
 			w.blockModeDecrypt(c, data)
 		}()
 	}
+
+	if w.uiWindow.CfbBth.IsChecked() {
+		iv := []byte(w.uiWindow.IvEdit.Text())
+		if !camellia.CorrectIV(iv) {
+			w.log("Некорректный вектор инициализации")
+			return
+		}
+
+		c, err := camellia.NewCFBDecrypter(block, iv)
+		if err != nil{
+			w.log(err.Error())
+		}
+		go func() {
+			w.blockStreamDecrypt(c, data)
+		}()
+	}
 }
 
 func (w *Window) log(msg string) {
@@ -158,4 +192,27 @@ func (w *Window) blockModeEncrypt(c cipher.BlockMode, data []byte) {
 
 	w.uiWindow.EncryptedText.Clear()
 	w.uiWindow.EncryptedText.Append(hex.EncodeToString(dst))
+}
+
+func (w *Window) blockStreamEncrypt(c cipher.Stream, data []byte) {
+	// дополняем последний блок
+	// src, dst := camellia.Complement(data)
+	dst := make([]byte, len(data))
+	c.XORKeyStream(dst, data)
+
+	w.uiWindow.EncryptedText.Clear()
+	w.uiWindow.EncryptedText.Append(hex.EncodeToString(dst))
+}
+
+func (w *Window) blockStreamDecrypt(c cipher.Stream, data []byte) {
+	src := data
+	dst := make([]byte, len(data))
+
+	c.XORKeyStream(dst, src)
+
+	// избавляемся от набивки
+	//res := camellia.Uncomplement(dst)
+
+	w.uiWindow.DecryptedText.Clear()
+	w.uiWindow.DecryptedText.Append(string(dst))
 }
