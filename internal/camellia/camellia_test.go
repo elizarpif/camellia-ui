@@ -95,13 +95,13 @@ func TestVectors(t *testing.T) {
 			}
 
 			c.Encrypt(buf, plaintext)
-			fmt.Println( hex.EncodeToString(buf))
+			fmt.Println(hex.EncodeToString(buf))
 			if !bytes.Equal(ciphertext, buf) {
 				t.Fatalf("Test vector %d:\nEncryption failed\nFound:    %s\nExpected: %s", i, hex.EncodeToString(buf), hex.EncodeToString(ciphertext))
 			}
 
 			c.Decrypt(buf, buf)
-			fmt.Println( hex.EncodeToString(buf))
+			fmt.Println(hex.EncodeToString(buf))
 			if !bytes.Equal(plaintext, buf) {
 				t.Fatalf("Test vector %d:\nDecryption failed\nFound:    %s\nExpected: %s", i, hex.EncodeToString(buf), hex.EncodeToString(plaintext))
 			}

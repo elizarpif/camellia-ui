@@ -42,7 +42,6 @@ func (x *cfb) XORKeyStream(dst, src []byte) error {
 	return nil
 }
 
-
 func NewCFBEncrypter(block cipher.Block, iv []byte) (Stream, error) {
 	return newCFB(block, iv, false)
 }

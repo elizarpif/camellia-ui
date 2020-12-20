@@ -3,37 +3,37 @@ package ui
 
 import (
 	"github.com/therecipe/qt/core"
-	"github.com/therecipe/qt/widgets"
 	"github.com/therecipe/qt/gui"
+	"github.com/therecipe/qt/widgets"
 )
 
 type UICamelliaMainWindow struct {
-	Centralwidget *widgets.QWidget
-	KeyEdit *widgets.QLineEdit
-	Label *widgets.QLabel
-	EncryptedText *widgets.QTextEdit
-	GroupBox *widgets.QGroupBox
-	EcbBth *widgets.QRadioButton
-	CbcBth *widgets.QRadioButton
-	CfbBth *widgets.QRadioButton
-	OfbBth *widgets.QRadioButton
-	EncryptBtn *widgets.QPushButton
-	DecryptBtn *widgets.QPushButton
-	SelectFileBtn *widgets.QPushButton
-	DecryptedText *widgets.QTextEdit
-	Label2 *widgets.QLabel
-	Label3 *widgets.QLabel
-	Logs *widgets.QTextEdit
-	Label4 *widgets.QLabel
-	Label5 *widgets.QLabel
-	IvEdit *widgets.QLineEdit
-	Label6 *widgets.QLabel
-	EncryptFileBtn *widgets.QPushButton
-	DecryptFileBtn *widgets.QPushButton
-	FilenameLb *widgets.QLabel
+	Centralwidget      *widgets.QWidget
+	KeyEdit            *widgets.QLineEdit
+	Label              *widgets.QLabel
+	EncryptedText      *widgets.QTextEdit
+	GroupBox           *widgets.QGroupBox
+	EcbBth             *widgets.QRadioButton
+	CbcBth             *widgets.QRadioButton
+	CfbBth             *widgets.QRadioButton
+	OfbBth             *widgets.QRadioButton
+	EncryptBtn         *widgets.QPushButton
+	DecryptBtn         *widgets.QPushButton
+	SelectFileBtn      *widgets.QPushButton
+	DecryptedText      *widgets.QTextEdit
+	Label2             *widgets.QLabel
+	Label3             *widgets.QLabel
+	Logs               *widgets.QTextEdit
+	Label4             *widgets.QLabel
+	Label5             *widgets.QLabel
+	IvEdit             *widgets.QLineEdit
+	Label6             *widgets.QLabel
+	EncryptFileBtn     *widgets.QPushButton
+	DecryptFileBtn     *widgets.QPushButton
+	FilenameLb         *widgets.QLabel
 	CancelCryptFileBtn *widgets.QPushButton
-	Menubar *widgets.QMenuBar
-	Statusbar *widgets.QStatusBar
+	Menubar            *widgets.QMenuBar
+	Statusbar          *widgets.QStatusBar
 }
 
 func (this *UICamelliaMainWindow) SetupUI(MainWindow *widgets.QMainWindow) {
@@ -132,13 +132,12 @@ func (this *UICamelliaMainWindow) SetupUI(MainWindow *widgets.QMainWindow) {
 	this.Statusbar.SetObjectName("Statusbar")
 	MainWindow.SetStatusBar(this.Statusbar)
 
-
-    this.RetranslateUi(MainWindow)
+	this.RetranslateUi(MainWindow)
 
 }
 
 func (this *UICamelliaMainWindow) RetranslateUi(MainWindow *widgets.QMainWindow) {
-    _translate := core.QCoreApplication_Translate
+	_translate := core.QCoreApplication_Translate
 	MainWindow.SetWindowTitle(_translate("MainWindow", "Camellia", "", -1))
 	this.KeyEdit.SetInputMask(_translate("MainWindow", "", "", -1))
 	this.KeyEdit.SetText(_translate("MainWindow", "0123456789abcdef", "", -1))

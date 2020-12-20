@@ -3,9 +3,10 @@ package window
 import (
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/elizarpif/camellia/ui"
 	"github.com/therecipe/qt/widgets"
-	"io/ioutil"
 )
 
 type Window struct {
@@ -137,7 +138,7 @@ func (w *Window) EncryptFileData() {
 	}
 
 	err = writeFile(dst, filename)
-	if err != nil{
+	if err != nil {
 		w.log("Не получается записать файл")
 		return
 	}
