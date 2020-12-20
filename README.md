@@ -23,4 +23,6 @@
 
 ## Скриншоты
 
-![Lab3](https://github.com/elizarpif/camelia/blob/develop/screenshots/2.png)
+![Lab3](https://github.com/elizarpif/camelia/blob/develop/screenshots/4.png)
+
+![Lab3](https://github.com/elizarpif/camelia/blob/develop/screenshots/5.png)

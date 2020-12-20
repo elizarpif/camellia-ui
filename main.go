@@ -1,34 +1,12 @@
 package main
 
 import (
-	"encoding/hex"
-	"io/ioutil"
 	"os"
 
 	"github.com/elizarpif/camellia/ui"
 	"github.com/elizarpif/camellia/window"
 	"github.com/therecipe/qt/widgets"
 )
-
-func fromHex(s string) []byte {
-	b, err := hex.DecodeString(s)
-	if err != nil {
-		panic(err)
-	}
-	return b
-}
-func openfile(filename string) ([]byte, error) {
-	dat, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	return dat, nil
-}
-
-func writeFile(data []byte, filename string) error {
-	return ioutil.WriteFile(filename, data, 0777)
-}
 
 func main() {
 	// needs to be called once before you can start using the QWidgets
@@ -82,30 +60,4 @@ func main() {
 	//	panic(err)
 	//}
 
-	//// cbc
-	//cbce := modes.NewCBCEncrypter(block, src)
-	//cbce.CryptBlocks(dst, src)
-	//fmt.Println(string(dst))
-	//
-	//cbcd := modes.NewCBCDecrypter(block, src)
-	//cbcd.CryptBlocks(dst, dst)
-	//fmt.Println(string(camellia.Uncomplement(dst)))
-	//
-	//// cfb
-	//cfbe := cipher.NewCFBEncrypter(block, src)
-	//cfbe.XORKeyStream(dst, src)
-	//fmt.Println(string(dst))
-
-	//cfbd := modes.NewCFBDecrypter(block, src)
-	//cfbd.XORKeyStream(dst, dst)
-	//fmt.Println(string(camellia.Uncomplement(dst)))
-	//
-	//// ofb
-	// ofbe := cipher.NewOFB(block, src)
-	//ofbe.XORKeyStream(dst, src)
-	//fmt.Println(string(dst))
-	//
-	//ofbd := cipher.NewOFB(block, src)
-	//ofbd.XORKeyStream(dst, dst)
-	//fmt.Println(string(camellia.Uncomplement(dst)))
 }
