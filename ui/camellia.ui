@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,22 +16,34 @@
   <property name="windowTitle">
    <string>Camellia</string>
   </property>
+  <property name="toolTipDuration">
+   <number>-9</number>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLineEdit" name="keyEdit">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>300</y>
-      <width>301</width>
-      <height>31</height>
+      <x>150</x>
+      <y>230</y>
+      <width>291</width>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="inputMask">
+     <string/>
+    </property>
+    <property name="text">
+     <string>0123456789abcdef</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
     </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>49</x>
-      <y>305</y>
+      <x>30</x>
+      <y>230</y>
       <width>81</width>
       <height>21</height>
      </rect>
@@ -40,10 +55,10 @@
    <widget class="QTextEdit" name="encryptedText">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>350</y>
-      <width>301</width>
-      <height>79</height>
+      <x>150</x>
+      <y>348</y>
+      <width>291</width>
+      <height>81</height>
      </rect>
     </property>
     <property name="readOnly">
@@ -147,9 +162,9 @@
    <widget class="QPushButton" name="selectFileBtn">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>150</x>
       <y>20</y>
-      <width>301</width>
+      <width>291</width>
       <height>41</height>
      </rect>
     </property>
@@ -160,17 +175,17 @@
    <widget class="QTextEdit" name="decryptedText">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>150</x>
       <y>70</y>
-      <width>301</width>
-      <height>211</height>
+      <width>291</width>
+      <height>141</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>30</x>
       <y>70</y>
       <width>81</width>
       <height>21</height>
@@ -183,8 +198,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>390</y>
+      <x>30</x>
+      <y>350</y>
       <width>81</width>
       <height>21</height>
      </rect>
@@ -196,9 +211,9 @@
    <widget class="QTextEdit" name="logs">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>440</y>
-      <width>301</width>
+      <x>150</x>
+      <y>450</y>
+      <width>291</width>
       <height>79</height>
      </rect>
     </property>
@@ -209,7 +224,7 @@
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>30</x>
       <y>450</y>
       <width>81</width>
       <height>21</height>
@@ -217,6 +232,51 @@
     </property>
     <property name="text">
      <string>Логи</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>290</y>
+      <width>81</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Вектор</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ivEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>290</y>
+      <width>291</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0123456789abcdef</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Normal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>310</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>инициализации</string>
     </property>
    </widget>
   </widget>

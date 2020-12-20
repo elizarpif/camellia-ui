@@ -19,7 +19,13 @@ func Uncomplement(dst []byte) []byte {
 	if len(dst) == 0 {
 		return dst
 	}
+
 	n := int(dst[len(dst)-1])
-	to := len(dst) - int(n)
+	to := len(dst) - n
+
+	if to < 0 || to > len(dst) {
+		return dst
+	}
+
 	return dst[:to]
 }

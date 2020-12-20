@@ -102,7 +102,7 @@ func main() {
 	//fmt.Println(string(camellia.Uncomplement(dst)))
 	//
 	//// ofb
-	//ofbe := modes.NewOFB(block, src)
+	// ofbe := cipher.NewOFB(block, src)
 	//ofbe.XORKeyStream(dst, src)
 	//fmt.Println(string(dst))
 	//

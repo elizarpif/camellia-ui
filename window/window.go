@@ -1,8 +1,10 @@
 package window
 
 import (
+	"crypto/cipher"
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/elizarpif/camellia/internal/camellia"
 	"github.com/elizarpif/camellia/ui"
@@ -28,6 +30,22 @@ func (w *Window) Connect() {
 	ww.DecryptBtn.ConnectClicked(func(checked bool) {
 		w.DecryptData()
 	})
+
+	ww.CbcBth.ConnectClicked(func(checked bool) {
+		if checked {
+			w.uiWindow.IvEdit.SetEnabled(true)
+		}
+	})
+
+	ww.EcbBth.ConnectClicked(func(checked bool) {
+		w.uiWindow.IvEdit.SetDisabled(true)
+	})
+	ww.OfbBth.ConnectClicked(func(checked bool) {
+		w.uiWindow.IvEdit.SetDisabled(true)
+	})
+	ww.CfbBth.ConnectClicked(func(checked bool) {
+		w.uiWindow.IvEdit.SetDisabled(true)
+	})
 }
 
 func (w *Window) EncryptData() {
@@ -41,29 +59,28 @@ func (w *Window) EncryptData() {
 	block, err := camellia.NewCameliaCipher(key)
 	if err != nil {
 		fmt.Print(err.Error())
-		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia camellia: %s", err.Error()))
+		w.log("Некорректная длина ключа")
 		return
 	}
 
-	src, dst := camellia.Complement(data)
-	fmt.Println("src = %s", string(src))
-
 	if w.uiWindow.EcbBth.IsChecked() {
 		c := camellia.NewECBEncrypter(block)
+		go func() {
+			w.blockModeEncrypt(c, data)
+		}()
+	}
 
-		c.CryptBlocks(dst, src)
-		w.uiWindow.EncryptedText.Clear()
-
-		dstStr := hex.EncodeToString(dst)
-		w.uiWindow.EncryptedText.Append(dstStr)
-
-		dstApp := w.uiWindow.EncryptedText.ToPlainText()
-		if dstApp != dstStr {
-			w.uiWindow.Logs.Append("not equal")
+	if w.uiWindow.CbcBth.IsChecked() {
+		iv := []byte(w.uiWindow.IvEdit.Text())
+		if !camellia.CorrectIV(iv) {
+			w.log("Некорректный вектор инициализации")
+			return
 		}
 
-		fmt.Printf("dst = %s, %s", dstStr, dstApp)
-		fmt.Printf("len = %d\n", len(dstStr))
+		c := cipher.NewCBCEncrypter(block, iv)
+		go func() {
+			w.blockModeEncrypt(c, data)
+		}()
 	}
 }
 
@@ -83,24 +100,55 @@ func (w *Window) DecryptData() {
 
 	block, err := camellia.NewCameliaCipher(key)
 	if err != nil {
-		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia camellia: ", err.Error()))
+		w.log("Некорректная длина ключа")
 		return
 	}
 
-	src := data
-	dst := make([]byte, len(data))
-	fmt.Println("src = ", string(src))
-	fmt.Printf("len = %d", len(src))
-
 	if w.uiWindow.EcbBth.IsChecked() {
 		c := camellia.NewECBDecrypter(block)
-
-		c.CryptBlocks(dst, src)
-		fmt.Println(string(dst))
-		w.uiWindow.DecryptedText.Clear()
-
-		res := camellia.Uncomplement(dst)
-		fmt.Println("dst = ", string(dst))
-		w.uiWindow.DecryptedText.Append(string(res))
+		go func() {
+			w.blockModeDecrypt(c, data)
+		}()
 	}
+
+	if w.uiWindow.CbcBth.IsChecked() {
+		iv := []byte(w.uiWindow.IvEdit.Text())
+		if !camellia.CorrectIV(iv) {
+			w.log("Некорректный вектор инициализации")
+			return
+		}
+
+		c := cipher.NewCBCDecrypter(block, iv)
+		go func() {
+			w.blockModeDecrypt(c, data)
+		}()
+	}
+}
+
+func (w *Window) log(msg string) {
+	str := fmt.Sprintf("%s: %s", time.Now().Format("15:04:05"), msg)
+	w.uiWindow.Logs.Append(str)
+}
+
+func (w *Window) blockModeDecrypt(c cipher.BlockMode, data []byte) {
+	src := data
+	dst := make([]byte, len(data))
+
+	c.CryptBlocks(dst, src)
+
+	// избавляемся от набивки
+	res := camellia.Uncomplement(dst)
+
+	w.uiWindow.DecryptedText.Clear()
+	w.uiWindow.DecryptedText.Append(string(res))
+}
+
+func (w *Window) blockModeEncrypt(c cipher.BlockMode, data []byte) {
+	// дополняем последний блок
+	src, dst := camellia.Complement(data)
+
+	c.CryptBlocks(dst, src)
+
+	w.uiWindow.EncryptedText.Clear()
+	w.uiWindow.EncryptedText.Append(hex.EncodeToString(dst))
 }
