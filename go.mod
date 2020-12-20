@@ -1,4 +1,4 @@
-module github.com/elizarpif/camelia
+module github.com/elizarpif/uicamellia
 
 go 1.15
 

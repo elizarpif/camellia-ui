@@ -1,4 +1,4 @@
-package cipher
+package camellia
 
 func Complement(src []byte) ([]byte, []byte) {
 	compl := BLOCKSIZE - len(src)%BLOCKSIZE

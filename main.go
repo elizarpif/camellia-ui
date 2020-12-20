@@ -64,10 +64,10 @@ func main() {
 	//}
 	//
 	//
-	//block, _ := cipher.NewCameliaCipher([]byte(key))
-	//src, dst := cipher.Complement(text)
+	//block, _ := camellia.NewCameliaCipher([]byte(key))
+	//src, dst := camellia.Complement(text)
 	//
-	//ecb := cipher.NewECB(block)
+	//ecb := camellia.NewECB(block)
 	//ecb.Encrypt(dst, src)
 	//
 	//err = writeFile(dst, "/Users/yapivov2/Documents/encrypted_fauna2.owl")
@@ -90,7 +90,7 @@ func main() {
 	//
 	//cbcd := modes.NewCBCDecrypter(block, src)
 	//cbcd.CryptBlocks(dst, dst)
-	//fmt.Println(string(cipher.Uncomplement(dst)))
+	//fmt.Println(string(camellia.Uncomplement(dst)))
 	//
 	//// cfb
 	//cfbe := modes.NewCFBEncrypter(block, src)
@@ -99,7 +99,7 @@ func main() {
 	//
 	//cfbd := modes.NewCFBDecrypter(block, src)
 	//cfbd.XORKeyStream(dst, dst)
-	//fmt.Println(string(cipher.Uncomplement(dst)))
+	//fmt.Println(string(camellia.Uncomplement(dst)))
 	//
 	//// ofb
 	//ofbe := modes.NewOFB(block, src)
@@ -108,5 +108,5 @@ func main() {
 	//
 	//ofbd := modes.NewOFB(block, src)
 	//ofbd.XORKeyStream(dst, dst)
-	//fmt.Println(string(cipher.Uncomplement(dst)))
+	//fmt.Println(string(camellia.Uncomplement(dst)))
 }

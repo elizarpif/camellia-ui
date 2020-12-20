@@ -1,4 +1,4 @@
-package cipher
+package camellia
 
 import (
 	"crypto/cipher"
@@ -13,7 +13,7 @@ const BLOCKSIZE = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-	return "cipher: invalid key size " + strconv.Itoa(int(k))
+	return "camellia: invalid key size " + strconv.Itoa(int(k))
 }
 
 type cameliaCipher struct {
@@ -46,10 +46,10 @@ func (c cameliaCipher) BlockSize() int {
 
 func crypt(c cameliaCipher, dst, src []byte) {
 	if len(src) < BLOCKSIZE {
-		panic("cipher: src buffer is small")
+		panic("camellia: src buffer is small")
 	}
 	if len(dst) < BLOCKSIZE {
-		panic("cipher: dst buffer is small")
+		panic("camellia: dst buffer is small")
 	}
 
 	//  Шифруемое сообщение делится на две 64-битные части

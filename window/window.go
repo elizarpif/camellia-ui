@@ -3,7 +3,7 @@ package window
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/elizarpif/camelia/cipher"
+	"github.com/elizarpif/camelia/camellia"
 	"github.com/elizarpif/camelia/ui"
 )
 
@@ -37,18 +37,18 @@ func (w *Window) EncryptData() {
 
 	key := []byte(w.uiWindow.KeyEdit.Text())
 
-	block, err := cipher.NewCameliaCipher(key)
+	block, err := camellia.NewCameliaCipher(key)
 	if err != nil {
 		fmt.Print(err.Error())
-		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia cipher: %s", err.Error()))
+		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia camellia: %s", err.Error()))
 		return
 	}
 
-	src, dst := cipher.Complement(data)
+	src, dst := camellia.Complement(data)
 	fmt.Println("src = %s", string(src))
 
 	if w.uiWindow.EcbBth.IsChecked() {
-		c := cipher.NewECBEncrypter(block)
+		c := camellia.NewECBEncrypter(block)
 
 		c.CryptBlocks(dst, src)
 		w.uiWindow.EncryptedText.Clear()
@@ -80,9 +80,9 @@ func (w *Window) DecryptData() {
 
 	key := []byte(w.uiWindow.KeyEdit.Text())
 
-	block, err := cipher.NewCameliaCipher(key)
+	block, err := camellia.NewCameliaCipher(key)
 	if err != nil {
-		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia cipher: ", err.Error()))
+		w.uiWindow.Logs.Append(fmt.Sprintf("can't set camellia camellia: ", err.Error()))
 		return
 	}
 
@@ -92,13 +92,13 @@ func (w *Window) DecryptData() {
 	fmt.Printf("len = %d", len(src))
 
 	if w.uiWindow.EcbBth.IsChecked() {
-		c := cipher.NewECBDecrypter(block)
+		c := camellia.NewECBDecrypter(block)
 
 		c.CryptBlocks(dst, src)
 		fmt.Println(string(dst))
 		w.uiWindow.DecryptedText.Clear()
 
-		res := cipher.Uncomplement(dst)
+		res := camellia.Uncomplement(dst)
 		fmt.Println("dst = ", string(dst))
 		w.uiWindow.DecryptedText.Append(string(res))
 	}

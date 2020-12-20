@@ -1,3 +1,3 @@
-package cipher
+package camellia
 
 // режим сцепления блоков шифра
