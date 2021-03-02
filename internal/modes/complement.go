@@ -1,4 +1,8 @@
-package camellia
+package modes
+
+import "github.com/elizarpif/camellia"
+
+const BLOCKSIZE = camellia.BLOCKSIZE
 
 func Complement(src []byte) ([]byte, []byte) {
 	compl := BLOCKSIZE - len(src)%BLOCKSIZE

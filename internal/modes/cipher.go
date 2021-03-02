@@ -1,4 +1,4 @@
-package camellia
+package modes
 
 // возвращает количество зашифрованных байт
 func xorBytes(dst, a, b []byte) int {

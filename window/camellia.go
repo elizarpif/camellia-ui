@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elizarpif/camellia-ui/internal/camellia"
+	"github.com/elizarpif/camellia"
+	"github.com/elizarpif/camellia-ui/internal/modes"
 )
 
 func (w *Window) encryptData(key, data []byte) ([]byte, error) {
@@ -17,18 +18,18 @@ func (w *Window) encryptData(key, data []byte) ([]byte, error) {
 	}
 
 	if w.uiWindow.EcbBth.IsChecked() {
-		c := camellia.NewECBEncrypter(block)
+		c := modes.NewECBEncrypter(block)
 		return w.blockModeEncrypt(c, data)
 	}
 
 	iv := []byte(w.uiWindow.IvEdit.Text())
-	if !camellia.CorrectIV(iv) {
+	if !modes.CorrectIV(iv) {
 		w.log("Некорректный вектор инициализации")
 		return nil, errors.New("Некорректный вектор инициализации")
 	}
 
 	if w.uiWindow.CbcBth.IsChecked() {
-		c, err := camellia.NewCBCEncrypter(block, iv)
+		c, err := modes.NewCBCEncrypter(block, iv)
 		if err != nil {
 			w.log(err.Error())
 			return nil, err
@@ -39,7 +40,7 @@ func (w *Window) encryptData(key, data []byte) ([]byte, error) {
 	}
 
 	if w.uiWindow.CfbBth.IsChecked() {
-		c, err := camellia.NewCFBEncrypter(block, iv)
+		c, err := modes.NewCFBEncrypter(block, iv)
 		if err != nil {
 			w.log(err.Error())
 			return nil, err
@@ -48,7 +49,7 @@ func (w *Window) encryptData(key, data []byte) ([]byte, error) {
 		return w.blockStreamEncrypt(c, data)
 	}
 
-	c, err := camellia.NewOFB(block, iv)
+	c, err := modes.NewOFB(block, iv)
 	if err != nil {
 		w.log(err.Error())
 		return nil, err
@@ -65,18 +66,18 @@ func (w *Window) decryptData(key, data []byte) ([]byte, error) {
 	}
 
 	if w.uiWindow.EcbBth.IsChecked() {
-		c := camellia.NewECBDecrypter(block)
+		c := modes.NewECBDecrypter(block)
 		return w.blockModeDecrypt(c, data)
 	}
 
 	iv := []byte(w.uiWindow.IvEdit.Text())
-	if !camellia.CorrectIV(iv) {
+	if !modes.CorrectIV(iv) {
 		w.log("Некорректный вектор инициализации")
 		return nil, errors.New("Некорректный вектор инициализации")
 	}
 
 	if w.uiWindow.CbcBth.IsChecked() {
-		c, err := camellia.NewCBCDecrypter(block, iv)
+		c, err := modes.NewCBCDecrypter(block, iv)
 		if err != nil {
 			w.log(err.Error())
 		}
@@ -85,7 +86,7 @@ func (w *Window) decryptData(key, data []byte) ([]byte, error) {
 	}
 
 	if w.uiWindow.CfbBth.IsChecked() {
-		c, err := camellia.NewCFBDecrypter(block, iv)
+		c, err := modes.NewCFBDecrypter(block, iv)
 		if err != nil {
 			w.log(err.Error())
 		}
@@ -93,7 +94,7 @@ func (w *Window) decryptData(key, data []byte) ([]byte, error) {
 		return w.blockStreamDecrypt(c, data)
 	}
 
-	c, err := camellia.NewOFB(block, iv)
+	c, err := modes.NewOFB(block, iv)
 	if err != nil {
 		w.log(err.Error())
 	}
@@ -106,7 +107,7 @@ func (w *Window) log(msg string) {
 	w.uiWindow.Logs.Append(str)
 }
 
-func (w *Window) blockModeDecrypt(c camellia.BlockMode, data []byte) ([]byte, error) {
+func (w *Window) blockModeDecrypt(c modes.BlockMode, data []byte) ([]byte, error) {
 	src := data
 	dst := make([]byte, len(data))
 
@@ -117,14 +118,14 @@ func (w *Window) blockModeDecrypt(c camellia.BlockMode, data []byte) ([]byte, er
 	}
 
 	// избавляемся от набивки
-	res := camellia.Uncomplement(dst)
+	res := modes.Uncomplement(dst)
 
 	return res, nil
 }
 
-func (w *Window) blockModeEncrypt(c camellia.BlockMode, data []byte) ([]byte, error) {
+func (w *Window) blockModeEncrypt(c modes.BlockMode, data []byte) ([]byte, error) {
 	// дополняем последний блок
-	src, dst := camellia.Complement(data)
+	src, dst := modes.Complement(data)
 
 	err := c.CryptBlocks(dst, src)
 	if err != nil {
@@ -135,7 +136,7 @@ func (w *Window) blockModeEncrypt(c camellia.BlockMode, data []byte) ([]byte, er
 	return dst, nil
 }
 
-func (w *Window) blockStreamEncrypt(c camellia.Stream, data []byte) ([]byte, error) {
+func (w *Window) blockStreamEncrypt(c modes.Stream, data []byte) ([]byte, error) {
 	dst := make([]byte, len(data))
 
 	err := c.XORKeyStream(dst, data)
@@ -147,7 +148,7 @@ func (w *Window) blockStreamEncrypt(c camellia.Stream, data []byte) ([]byte, err
 	return dst, nil
 }
 
-func (w *Window) blockStreamDecrypt(c camellia.Stream, data []byte) ([]byte, error) {
+func (w *Window) blockStreamDecrypt(c modes.Stream, data []byte) ([]byte, error) {
 	dst := make([]byte, len(data))
 
 	err := c.XORKeyStream(dst, data)

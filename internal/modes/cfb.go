@@ -1,5 +1,5 @@
 // CFB - режим обратной связи по шифру
-package camellia
+package modes
 
 import (
 	"crypto/cipher"

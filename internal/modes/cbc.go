@@ -1,4 +1,4 @@
-package camellia
+package modes
 
 import (
 	"crypto/cipher"
