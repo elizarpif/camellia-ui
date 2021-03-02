@@ -4,7 +4,7 @@ import (
 	"crypto/cipher"
 	"errors"
 )
-
+// OFB - режим выходной обратной связи
 type ofb struct {
 	b       cipher.Block
 	cipher  []byte

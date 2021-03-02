@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/elizarpif/camellia/ui"
-	"github.com/elizarpif/camellia/window"
+	"github.com/elizarpif/camellia-ui/ui"
+	"github.com/elizarpif/camellia-ui/window"
 	"github.com/therecipe/qt/widgets"
 )
 

@@ -1,3 +1,4 @@
+// CFB - режим обратной связи по шифру
 package camellia
 
 import (

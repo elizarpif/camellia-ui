@@ -3,12 +3,14 @@ package camellia
 import (
 	"crypto/cipher"
 	"errors"
+
+	"github.com/elizarpif/camellia"
 )
 
 // режим сцепления блоков шифра
 
 func CorrectIV(data []byte) bool {
-	return len(data) == BLOCKSIZE
+	return len(data) == camellia.BLOCKSIZE
 }
 
 type cbc struct {

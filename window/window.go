@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/elizarpif/camellia/ui"
+	"github.com/elizarpif/camellia-ui/ui"
 	"github.com/therecipe/qt/widgets"
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elizarpif/camellia/internal/camellia"
+	"github.com/elizarpif/camellia-ui/internal/camellia"
 )
 
 func (w *Window) encryptData(key, data []byte) ([]byte, error) {

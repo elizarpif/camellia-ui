@@ -1,5 +1,6 @@
 package camellia
 
+// возвращает количество зашифрованных байт
 func xorBytes(dst, a, b []byte) int {
 	n := len(a)
 	if len(b) < n {
